@@ -1,0 +1,68 @@
+/* استایل‌های عمومی */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Vazir', 'Roboto', 'Arial', sans-serif;
+  /* direction: rtl; */
+  text-align: right;
+}
+
+.App {
+  min-height: 100vh;
+}
+
+/* استایل‌های اضافی برای Material UI */
+.MuiTypography-root {
+  font-family: 'Vazir', 'Roboto', 'Arial', sans-serif !important;
+}
+
+.MuiButton-root {
+  font-family: 'Vazir', 'Roboto', 'Arial', sans-serif !important;
+}
+
+/* استایل برای اسکرول‌بار */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(45deg, #FF8E53 30%, #FE6B8B 90%);
+}
+
+/* انیمیشن‌های اضافی */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* استایل برای موبایل */
+@media (max-width: 768px) {
+  .MuiContainer-root {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+}
