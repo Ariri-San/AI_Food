@@ -18,7 +18,7 @@ const FeedbackList = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [count, setCount] = useState(0);
-  const [pageSize] = useState(10);
+  const [pageSize] = useState(12);
   const { t } = useLang();
   const query = useQuery();
   const navigate = useNavigate();
@@ -117,6 +117,9 @@ const FeedbackList = () => {
                 <Card 
                   sx={{ 
                     height: '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
                     transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
                     '&:hover': {
                       transform: 'translateY(-4px)',
@@ -124,13 +127,23 @@ const FeedbackList = () => {
                     }
                   }}
                 >
-                  <CardMedia
-                    component="img"
-                    height="200"
-                    image={feedback.image}
-                    alt={`Food ${feedback.id}`}
-                    sx={{ objectFit: 'cover' }}
-                  />
+                  {/* Responsive image box with fixed aspect ratio */}
+                  <Box sx={{ position: 'relative', width: 240, height: 240, backgroundColor: '#f5f5f5', borderRadius: '12px 12px 0 0', overflow: 'hidden', mx: 'auto' }}>
+                    <CardMedia
+                      component="img"
+                      image={feedback.image}
+                      alt={`Food ${feedback.id}`}
+                      sx={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                        borderRadius: '12px 12px 0 0',
+                        backgroundColor: '#f5f5f5',
+                        m: 0,
+                        p: 0
+                      }}
+                    />
+                  </Box>
                   <CardContent sx={{ p: 2 }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                       <FoodIcon sx={{ mr: 1, fontSize: 20, color: '#FE6B8B' }} />

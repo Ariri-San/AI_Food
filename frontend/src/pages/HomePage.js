@@ -143,8 +143,8 @@ const HomePage = () => {
           <Typography variant="h4" component="h2" sx={{ textAlign: 'center', mb: 3, fontWeight: 'bold' }}>
             {t('stats_title')}
           </Typography>
-          <Grid container spacing={4} sx={{ textAlign: 'center' }}>
-            <Grid item xs={12} sm={3}>
+          <Grid container spacing={2} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'stretch', textAlign: 'center' }}>
+            <Grid item xs={12} sm={3} sx={{ flex: 1, minWidth: 0, textAlign: 'center', px: 2, py: { xs: 1, sm: 1 } }}>
               <Typography variant="h3" sx={{ color: '#4CAF50', fontWeight: 'bold' }}>
                 {stats.correct_predictions ?? '--'}
               </Typography>
@@ -152,7 +152,7 @@ const HomePage = () => {
                 {t('stats_predictions')}
               </Typography>
             </Grid>
-            <Grid item xs={12} sm={3}>
+            <Grid item xs={12} sm={3} sx={{ flex: 1, minWidth: 0, textAlign: 'center', px: 2, py: { xs: 1, sm: 1 } }}>
               <Typography variant="h3" sx={{ color: '#FE6B8B', fontWeight: 'bold' }}>
                 {stats.feedback_count}
               </Typography>
@@ -160,7 +160,7 @@ const HomePage = () => {
                 {t('stats_data_count')}
               </Typography>
             </Grid>
-            <Grid item xs={12} sm={3}>
+            <Grid item xs={12} sm={3} sx={{ flex: 1, minWidth: 0, textAlign: 'center', px: 2, py: { xs: 1, sm: 1 } }}>
               <Typography variant="h3" sx={{ color: '#FF8E53', fontWeight: 'bold' }}>
                 {stats.label_count}
               </Typography>
@@ -168,9 +168,9 @@ const HomePage = () => {
                 {t('stats_foods')}
               </Typography>
             </Grid>
-            <Grid item xs={12} sm={3}>
+            <Grid item xs={12} sm={3} sx={{ flex: 1, minWidth: 0, textAlign: 'center', px: 10, py: { xs: 1, sm: 1 } }}>
               <Typography variant="h3" sx={{ color: '#4CAF50', fontWeight: 'bold' }}>
-                {stats.accuracy !== null ? `${stats.accuracy}%` : '--'}
+                {stats.accuracy !== null ? `${Math.round(stats.accuracy * 1000000) / 10000}%` : '--'}
               </Typography>
               <Typography variant="h6" color="text.secondary">
                 {t('stats_accuracy')}
