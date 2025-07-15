@@ -1,8 +1,9 @@
 from django.urls import path
-from .views import PredictFoodView, AddFoodSampleView, FoodFeedbackListView, api_root, RetrainModelView, FoodLabelListCreateView, FoodFeedbackSampleUpdateView, SubmitFeedbackView, system_stats
+from .views import PredictFoodView, AddFoodSampleView, FoodFeedbackListView, api_root, RetrainModelView \
+    , FoodLabelListCreateView, FoodFeedbackSampleUpdateView, SubmitFeedbackView, system_stats
 
 urlpatterns = [
-    path('', api_root, name='api-root'),
+    # path('', api_root, name='api-root'),
     path('predict/', PredictFoodView.as_view(), name='predict-food'),
     path('add/', AddFoodSampleView.as_view(), name='add-food-sample'),
     path('feedback-list/', FoodFeedbackListView.as_view(), name='feedback-list'),

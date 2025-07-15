@@ -24,6 +24,7 @@ from rest_framework.filters import OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from django.core.management import call_command
 from io import StringIO
+from django.views.generic import TemplateView
 
 # Load class names dynamically from database
 def get_class_names():
