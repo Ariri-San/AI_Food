@@ -18,10 +18,23 @@ class FoodFeedbackSampleSerializer(serializers.ModelSerializer):
     label_id = serializers.PrimaryKeyRelatedField(queryset=FoodLabel.objects.all(), source='label', write_only=True)
     token = serializers.UUIDField(read_only=True)
     predicted_label = serializers.CharField(read_only=True, required=False)  # برای سازگاری با فرانت‌اند
+    is_correct = serializers.CharField(required=False, allow_null=True)
     
     class Meta:
         model = FoodFeedbackSample
-        fields = ['id', 'image', 'label', 'label_id', 'created_at', 'token', 'predicted_label']
+        fields = ['id', 'image', 'label', 'label_id', 'created_at', 'token', 'predicted_label', 'is_correct']
+
+class ShowFoodFeedbackSampleSerializer(serializers.ModelSerializer):
+    label = FoodLabelSerializer(read_only=True)
+    label_id = serializers.PrimaryKeyRelatedField(queryset=FoodLabel.objects.all(), source='label', write_only=True)
+    token = serializers.UUIDField(read_only=True)
+    predicted_label = serializers.CharField(read_only=True, required=False)  # برای سازگاری با فرانت‌اند
+    is_correct = serializers.BooleanField(required=False, allow_null=True)
+    
+    class Meta:
+        model = FoodFeedbackSample
+        fields = ['id', 'image', 'label', 'label_id', 'created_at', 'token', 'predicted_label', 'is_correct']
+
 
 class ImageOnlySerializer(serializers.Serializer):
     image = serializers.ImageField() 

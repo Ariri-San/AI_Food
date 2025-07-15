@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework import status
-from .models import FoodFeedbackSample, FoodLabel
+from .models import FoodFeedbackSample, FoodLabel, SystemInfo
 from django.conf import settings
 import torch
 import torchvision
@@ -14,7 +14,7 @@ import os
 from rest_framework import serializers
 from rest_framework.decorators import api_view
 from rest_framework.reverse import reverse
-from .serializers import FoodFeedbackSampleSerializer, ImageOnlySerializer, FoodLabelSerializer
+from .serializers import FoodFeedbackSampleSerializer, ImageOnlySerializer, FoodLabelSerializer, ShowFoodFeedbackSampleSerializer
 from rest_framework.permissions import IsAdminUser
 import subprocess
 from rest_framework import generics, permissions
@@ -22,6 +22,8 @@ from datetime import datetime
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.filters import OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
+from django.core.management import call_command
+from io import StringIO
 
 # Load class names dynamically from database
 def get_class_names():
@@ -39,7 +41,7 @@ def get_num_classes():
         return 0
 
 # Load model and class names from database
-MODEL_PATH = os.path.join(settings.BASE_DIR, 'efficientnet_food_classifier.pth')
+MODEL_PATH = os.path.join(settings.BASE_DIR, 'model_core', 'efficientnet_food_classifier.pth')
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -75,6 +77,25 @@ def api_root(request, format=None):
         'feedback-list': reverse('feedback-list', request=request, format=format),
     })
 
+@api_view(['GET'])
+def system_stats(request):
+    from .models import FoodFeedbackSample, FoodLabel
+    feedback_count = FoodFeedbackSample.objects.count()
+    label_count = FoodLabel.objects.count()
+    correct_predictions = FoodFeedbackSample.objects.filter(is_correct=True).count()
+    info = SystemInfo.objects.first()
+    accuracy = info.accuracy if info else None
+    last_trained = info.last_trained if info else None
+    total_samples = info.total_samples if info else None
+    return Response({
+        'feedback_count': feedback_count,
+        'label_count': label_count,
+        'correct_predictions': correct_predictions,
+        'accuracy': accuracy,
+        'last_trained': last_trained,
+        'total_samples': total_samples,
+    })
+
 class PredictFoodView(APIView):
     parser_classes = (MultiPartParser, FormParser)
     serializer_class = ImageOnlySerializer
@@ -103,7 +124,8 @@ class PredictFoodView(APIView):
             if correct_label and correct_label != '' and correct_label != 'undefined':
                 try:
                     label_instance = FoodLabel.objects.get(pk=correct_label)
-                    feedback = FoodFeedbackSample.objects.create(image=image_file, label=label_instance)
+                    is_correct = (label_instance.name == predicted_label)
+                    feedback = FoodFeedbackSample.objects.create(image=image_file, label=label_instance, is_correct=is_correct)
                     serializer = FoodFeedbackSampleSerializer(feedback, context={'request': request})
                     return Response({'predicted_label': predicted_label, 'feedback': serializer.data})
                 except FoodLabel.DoesNotExist:
@@ -121,10 +143,14 @@ class AddFoodSampleView(APIView):
     serializer_class = FoodFeedbackSampleSerializer
 
     def post(self, request, *args, **kwargs):
-        serializer = FoodFeedbackSampleSerializer(data=request.data)
+        data = request.data.copy()
+        # اگر مقدار is_correct برابر 0 یا '0' یا '' یا 'null' بود، None ذخیره شود
+        if 'is_correct' in data and (data['is_correct'] in ('', 'null', None, 0, '0')):
+            data['is_correct'] = None
+        serializer = ShowFoodFeedbackSampleSerializer(data=data)
         if serializer.is_valid():
             instance = serializer.save()
-            output_serializer = FoodFeedbackSampleSerializer(instance, context={'request': request})
+            output_serializer = ShowFoodFeedbackSampleSerializer(instance, context={'request': request})
             return Response(output_serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -134,7 +160,7 @@ class FeedbackPagination(PageNumberPagination):
     max_page_size = 50
 
 class FoodFeedbackListView(generics.ListAPIView):
-    serializer_class = FoodFeedbackSampleSerializer
+    serializer_class = ShowFoodFeedbackSampleSerializer
     pagination_class = FeedbackPagination
     filter_backends = [DjangoFilterBackend, OrderingFilter]
     filterset_fields = ['label']
@@ -149,7 +175,7 @@ class FoodFeedbackListView(generics.ListAPIView):
 
 class FoodFeedbackSampleUpdateView(generics.RetrieveUpdateAPIView):
     queryset = FoodFeedbackSample.objects.all()
-    serializer_class = FoodFeedbackSampleSerializer
+    serializer_class = ShowFoodFeedbackSampleSerializer
     permission_classes = []  # کنترل دسترسی در متد update
 
     def update(self, request, *args, **kwargs):
@@ -165,34 +191,22 @@ class FoodFeedbackSampleUpdateView(generics.RetrieveUpdateAPIView):
 class RetrainModelView(APIView):
     def post(self, request, *args, **kwargs):
         try:
-            # اجرای اسکریپت آموزش مجدد
-            result = subprocess.run(
-                ['python', 'retrain_model.py'], 
-                capture_output=True, 
-                text=True, 
-                check=True,
-                cwd=os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # مسیر پروژه
-            )
-            
+            # اجرای آموزش مدل با call_command
+            out = StringIO()
+            call_command('retrain_model', stdout=out)
+            output = out.getvalue()
             # Reload model after retraining
             global model
             model = None
             load_model()
-            
             return Response({
                 'message': 'Model retrained successfully.',
-                'output': result.stdout,
+                'output': output,
                 'timestamp': datetime.now().isoformat()
             })
-        except subprocess.CalledProcessError as e:
-            return Response({
-                'error': 'Retrain failed.', 
-                'details': e.stderr,
-                'return_code': e.returncode
-            }, status=500)
         except Exception as e:
             return Response({
-                'error': 'Unexpected error during retraining.',
+                'error': 'Retrain failed.',
                 'details': str(e)
             }, status=500)
 
@@ -202,26 +216,27 @@ class SubmitFeedbackView(APIView):
     def post(self, request, *args, **kwargs):
         image_file = request.FILES.get('image')
         predicted_label = request.data.get('predicted_label')
-        is_correct = request.data.get('is_correct') == 'true'
+        is_correct = request.data.get('is_correct')
         correct_label = request.data.get('correct_label')
         
         if not image_file or not predicted_label:
             return Response({'error': 'Image and predicted label are required.'}, status=400)
         
         try:
-            if is_correct:
+            if is_correct == 'true':
                 # اگر پیش‌بینی درست بود، لیبل پیش‌بینی شده را ذخیره کن
                 try:
                     label_instance = FoodLabel.objects.get(name=predicted_label)
                 except FoodLabel.DoesNotExist:
-                    # اگر لیبل وجود نداشت، آن را ایجاد کن
-                    label_instance = FoodLabel.objects.create(name=predicted_label)
+                    # اگر لیبل وجود نداشت
+                    return Response({'error': 'Correct label is required when prediction is incorrect.'}, status=400)
                 
                 feedback = FoodFeedbackSample.objects.create(
                     image=image_file, 
-                    label=label_instance
+                    label=label_instance,
+                    is_correct=True
                 )
-            else:
+            elif is_correct == 'false':
                 # اگر پیش‌بینی اشتباه بود، لیبل صحیح را ذخیره کن
                 if not correct_label:
                     return Response({'error': 'Correct label is required when prediction is incorrect.'}, status=400)
@@ -233,7 +248,17 @@ class SubmitFeedbackView(APIView):
                 
                 feedback = FoodFeedbackSample.objects.create(
                     image=image_file, 
-                    label=label_instance
+                    label=label_instance,
+                    is_correct=False
+                )
+                
+            else:
+                label_instance = FoodLabel.objects.get(name=predicted_label)
+                
+                feedback = FoodFeedbackSample.objects.create(
+                    image=image_file, 
+                    label=predicted_label,
+                    is_correct=None
                 )
             
             serializer = FoodFeedbackSampleSerializer(feedback, context={'request': request})

@@ -37,6 +37,7 @@ const translations = {
     stats_predictions: 'تشخیص موفق',
     stats_foods: 'نوع غذا',
     stats_accuracy: 'دقت تشخیص',
+    stats_data_count: 'تعداد دیتا',
     
     // Predict Page
     predict_title: 'تشخیص نوع غذا',
@@ -85,6 +86,7 @@ const translations = {
     total_labels: 'کل لیبل‌ها',
     last_retrain: 'آخرین آموزش',
     unknown: 'نامشخص',
+    user_data: 'داده کاربر',
     
     // Feedback Page
     feedback_title: 'لیست فیدبک‌ها',
@@ -276,6 +278,7 @@ const translations = {
     stats_predictions: 'Successful Predictions',
     stats_foods: 'Food Types',
     stats_accuracy: 'Recognition Accuracy',
+    stats_data_count: 'Data Count',
     
     // Predict Page
     predict_title: 'Food Type Recognition',
@@ -324,6 +327,7 @@ const translations = {
     total_labels: 'Total Labels',
     last_retrain: 'Last Retrain',
     unknown: 'Unknown',
+    user_data: 'User Data',
     
     // Feedback Page
     feedback_title: 'Feedback List',

@@ -40,7 +40,6 @@ const FeedbackForm = ({ onResult, onLoading, showTitle = true, mode: controlledM
       let result;
       if (mode === 'predict') {
         result = await api.predictFood({ image });
-        // اضافه کردن عکس به نتیجه برای استفاده در فیدبک
         result.image = image;
       } else {
         if (!labelId) {
@@ -49,7 +48,8 @@ const FeedbackForm = ({ onResult, onLoading, showTitle = true, mode: controlledM
           if (onLoading) onLoading(false);
           return;
         }
-        result = await api.predictFood({ image, labelId });
+        // فقط image و labelId را بفرست، is_correct نفرست
+        result = await api.addFoodSample({ image, labelId });
         result.image = image;
       }
       onResult && onResult(result);

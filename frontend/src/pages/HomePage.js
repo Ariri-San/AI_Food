@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
   Container, 
   Typography, 
@@ -18,10 +18,16 @@ import {
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useLang } from '../i18n';
+import api from '../services/api';
 
 const HomePage = () => {
   const navigate = useNavigate();
   const { t } = useLang();
+
+  const [stats, setStats] = useState({ feedback_count: 0, label_count: 0, accuracy: null });
+  useEffect(() => {
+    api.getSystemStats().then(setStats);
+  }, []);
 
   const features = [
     {
@@ -92,10 +98,12 @@ const HomePage = () => {
         {/* Features Section */}
         <Grid container spacing={4} sx={{ mb: 6 }}>
           {features.map((feature, index) => (
-            <Grid item xs={12} md={4} key={index}>
+            <Grid item xs={12} sm={6} md={4} key={index}>
               <Card 
                 sx={{ 
                   height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
                   background: 'rgba(255, 255, 255, 0.9)',
                   backdropFilter: 'blur(10px)',
                   border: '1px solid rgba(255, 255, 255, 0.2)',
@@ -106,14 +114,14 @@ const HomePage = () => {
                   }
                 }}
               >
-                <CardContent sx={{ textAlign: 'center', p: 3 }}>
+                <CardContent sx={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', textAlign: 'center', p: 3 }}>
                   <Box sx={{ mb: 2 }}>
                     {feature.icon}
                   </Box>
                   <Typography variant="h6" component="h3" sx={{ mb: 1, fontWeight: 'bold' }}>
                     {feature.title}
                   </Typography>
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography variant="body2" color="text.secondary" sx={{ mt: 'auto', maxWidth: 220, mx: 'auto', fontSize: { xs: '0.95rem', sm: '1rem' } }}>
                     {feature.description}
                   </Typography>
                 </CardContent>
@@ -136,25 +144,33 @@ const HomePage = () => {
             {t('stats_title')}
           </Typography>
           <Grid container spacing={4} sx={{ textAlign: 'center' }}>
-            <Grid item xs={12} sm={4}>
-              <Typography variant="h3" sx={{ color: '#FE6B8B', fontWeight: 'bold' }}>
-                1000+
+            <Grid item xs={12} sm={3}>
+              <Typography variant="h3" sx={{ color: '#4CAF50', fontWeight: 'bold' }}>
+                {stats.correct_predictions ?? '--'}
               </Typography>
               <Typography variant="h6" color="text.secondary">
                 {t('stats_predictions')}
               </Typography>
             </Grid>
-            <Grid item xs={12} sm={4}>
+            <Grid item xs={12} sm={3}>
+              <Typography variant="h3" sx={{ color: '#FE6B8B', fontWeight: 'bold' }}>
+                {stats.feedback_count}
+              </Typography>
+              <Typography variant="h6" color="text.secondary">
+                {t('stats_data_count')}
+              </Typography>
+            </Grid>
+            <Grid item xs={12} sm={3}>
               <Typography variant="h3" sx={{ color: '#FF8E53', fontWeight: 'bold' }}>
-                50+
+                {stats.label_count}
               </Typography>
               <Typography variant="h6" color="text.secondary">
                 {t('stats_foods')}
               </Typography>
             </Grid>
-            <Grid item xs={12} sm={4}>
+            <Grid item xs={12} sm={3}>
               <Typography variant="h3" sx={{ color: '#4CAF50', fontWeight: 'bold' }}>
-                95%
+                {stats.accuracy !== null ? `${stats.accuracy}%` : '--'}
               </Typography>
               <Typography variant="h6" color="text.secondary">
                 {t('stats_accuracy')}

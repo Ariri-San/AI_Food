@@ -278,8 +278,20 @@ const FeedbackEditForm = ({ feedbackId, token: initialToken }) => {
               <Grid item xs={12} sm={6}>
                 <Typography variant="body2" color="text.secondary">
                   {t('status')} <Chip 
-                    label={feedback.predicted_label === feedback.label?.name ? t('correct') : t('incorrect')} 
-                    color={feedback.predicted_label === feedback.label?.name ? 'success' : 'warning'}
+                    label={
+                      feedback.is_correct === true
+                        ? t('correct')
+                        : feedback.is_correct === false
+                        ? t('incorrect')
+                        : t('user_data')
+                    }
+                    color={
+                      feedback.is_correct === true
+                        ? 'success'
+                        : feedback.is_correct === false
+                        ? 'error'
+                        : 'default'
+                    }
                     size="small"
                   />
                 </Typography>

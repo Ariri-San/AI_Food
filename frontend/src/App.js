@@ -91,22 +91,22 @@ function ThemedApp() {
   }, [lang]);
 
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <Router>
-        <div className="App">
-          <Navbar />
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/predict" element={<PredictPage />} />
-            <Route path="/feedback" element={<FeedbackPage />} />
-            <Route path="/labels" element={<LabelsPage />} />
-            <Route path="/feedback/:id/edit" element={<EditFeedbackPage />} />
-            <Route path="*" element={<Navigate to="/" />} />
-          </Routes>
-        </div>
-      </Router>
-    </ThemeProvider>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <Router>
+          <div className="App">
+            <Navbar />
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/predict" element={<PredictPage />} />
+              <Route path="/feedback" element={<FeedbackPage />} />
+              <Route path="/labels" element={<LabelsPage />} />
+              <Route path="/feedback/:id/edit" element={<EditFeedbackPage />} />
+              <Route path="*" element={<Navigate to="/" />} />
+            </Routes>
+          </div>
+        </Router>
+      </ThemeProvider>
   );
 }
 

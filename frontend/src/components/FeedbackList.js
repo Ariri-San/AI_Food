@@ -144,13 +144,35 @@ const FeedbackList = () => {
                         {new Date(feedback.created_at).toLocaleDateString('fa-IR')}
                       </Typography>
                     </Box>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
                       <Chip
                         label={feedback.predicted_label || t('no_prediction')}
                         color={feedback.predicted_label === feedback.label?.name ? 'success' : 'warning'}
                         size="small"
                         variant="outlined"
                       />
+                      {/* is_correct status chip */}
+                      <Chip
+                        label={
+                          feedback.is_correct === true
+                            ? t('correct')
+                            : feedback.is_correct === false
+                            ? t('incorrect')
+                            : t('user_data')
+                        }
+                        color={
+                          feedback.is_correct === true
+                            ? 'success'
+                            : feedback.is_correct === false
+                            ? 'error'
+                            : 'default'
+                        }
+                        size="small"
+                        variant="filled"
+                        sx={{ ml: 1 }}
+                      />
+                    </Box>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <Box>
                         <Tooltip title={t('view_details')}>
                           <IconButton 

@@ -8,12 +8,17 @@ const api = {
     return res.json();
   },
   
-  async predictFood({ image, labelId }) {
+  async predictFood({ image, labelId, is_correct }) {
     const formData = new FormData();
     formData.append('image', image);
     // فقط اگر labelId مقدار معتبری داشت، آن را ارسال کن
     if (labelId && labelId !== '' && labelId !== 'undefined') {
       formData.append('correct_label', labelId);
+    }
+    if (is_correct !== undefined) {
+      formData.append('is_correct', is_correct);
+    } else {
+      formData.append('is_correct', '');
     }
     const res = await fetch(`${API_BASE}/predict/`, {
       method: 'POST',
@@ -100,8 +105,11 @@ const api = {
     const formData = new FormData();
     formData.append('image', image);
     formData.append('predicted_label', predictedLabel);
-    formData.append('is_correct', isCorrect);
-    
+    if (isCorrect !== undefined && isCorrect !== null) {
+      formData.append('is_correct', isCorrect);
+    } else {
+      formData.append('is_correct', '');
+    }
     if (!isCorrect && correctLabel) {
       formData.append('correct_label', correctLabel);
     }
@@ -145,6 +153,23 @@ const api = {
       throw new Error(data.error || 'خطا در حذف فیدبک');
     }
     return res.status === 204 ? { message: 'Feedback deleted successfully.' } : await res.json();
+  },
+
+  async getSystemStats() {
+    const res = await fetch(`${API_BASE}/system-stats/`);
+    return res.json();
+  },
+
+  async addFoodSample({ image, labelId }) {
+    const formData = new FormData();
+    formData.append('image', image);
+    formData.append('label_id', labelId);
+    const res = await fetch(`${API_BASE}/add/`, {
+      method: 'POST',
+      body: formData,
+    });
+    if (!res.ok) throw new Error('خطا در افزودن نمونه');
+    return res.json();
   },
 };
 
