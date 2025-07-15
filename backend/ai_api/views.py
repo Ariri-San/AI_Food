@@ -237,6 +237,7 @@ class SubmitFeedbackView(APIView):
                     label=label_instance,
                     is_correct=True
                 )
+            
             elif is_correct == 'false':
                 # اگر پیش‌بینی اشتباه بود، لیبل صحیح را ذخیره کن
                 if not correct_label:

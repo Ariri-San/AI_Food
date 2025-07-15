@@ -31,5 +31,5 @@ COPY backend/manage.py ./manage.py
 # Expose port (default Django runserver)
 EXPOSE 8000
 
-# Run migrations and start gunicorn on port 10000 (Render requirement)
-CMD ["sh", "-c", "cd backend && python manage.py migrate && gunicorn backend.wsgi:application --bind 0.0.0.0:10000"]
+# Run migrations and start server
+CMD ["sh", "-c", "cd backend && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"]
