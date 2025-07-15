@@ -32,8 +32,8 @@ from ai_api.models import FoodLabel, SystemInfo
 # Import engine and data_setup modules from backend dir
 sys.path.append(os.path.dirname(__file__))  # اضافه کردن model_core به sys.path برای import engine و data_setup
 try:
-    import engine
-    import data_setup
+    from backend.model_core import engine
+    from backend.model_core import data_setup
 except ImportError:
     print("engine.py or data_setup.py not found in model_core directory.")
     sys.exit(1)
