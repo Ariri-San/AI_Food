@@ -144,7 +144,10 @@ class AddFoodSampleView(APIView):
     serializer_class = FoodFeedbackSampleSerializer
 
     def post(self, request, *args, **kwargs):
-        data = request.data.copy()
+        data = request.data.dict()
+        image_file = request.FILES.get('image')
+        if image_file:
+            data['image'] = image_file
         # اگر مقدار is_correct برابر 0 یا '0' یا '' یا 'null' بود، None ذخیره شود
         if 'is_correct' in data and (data['is_correct'] in ('', 'null', None, 0, '0')):
             data['is_correct'] = None
@@ -271,3 +274,7 @@ class SubmitFeedbackView(APIView):
             
         except Exception as e:
             return Response({'error': str(e)}, status=500)
+
+class FoodLabelRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = FoodLabel.objects.all()
+    serializer_class = FoodLabelSerializer

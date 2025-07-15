@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import PredictFoodView, AddFoodSampleView, FoodFeedbackListView, api_root, RetrainModelView \
-    , FoodLabelListCreateView, FoodFeedbackSampleUpdateView, SubmitFeedbackView, system_stats
+    , FoodLabelListCreateView, FoodFeedbackSampleUpdateView, SubmitFeedbackView, system_stats, FoodLabelRetrieveUpdateDestroyView
 
 urlpatterns = [
     # path('', api_root, name='api-root'),
@@ -9,6 +9,7 @@ urlpatterns = [
     path('feedback-list/', FoodFeedbackListView.as_view(), name='feedback-list'),
     path('retrain/', RetrainModelView.as_view(), name='retrain-model'),
     path('labels/', FoodLabelListCreateView.as_view(), name='food-label-list-create'),
+    path('labels/<int:pk>/', FoodLabelRetrieveUpdateDestroyView.as_view(), name='food-label-detail'),
     path('feedback/<int:pk>/', FoodFeedbackSampleUpdateView.as_view(), name='feedback-edit'),
     path('submit-feedback/', SubmitFeedbackView.as_view(), name='submit-feedback'),
 ]
