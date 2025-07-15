@@ -13,6 +13,7 @@ from torchvision import transforms, datasets
 from torch import nn
 from torch.utils.data import DataLoader, random_split
 import django
+from model_core import engine, data_setup
 from ai_api.models import FoodLabel, SystemInfo
 from django.utils import timezone
 
@@ -27,15 +28,13 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backend.settings')
 import django
 django.setup()
 
-from ai_api.models import FoodLabel, SystemInfo
-
-# Import engine and data_setup modules from backend dir
-# sys.path.append(os.path.dirname(__file__))  # اضافه کردن model_core به sys.path برای import engine و data_setup
-try:
-    from . import engine, data_setup
-except ImportError:
-    print("engine.py or data_setup.py not found in model_core directory.")
-    # sys.exit(1)
+# # Import engine and data_setup modules from backend dir
+# # sys.path.append(os.path.dirname(__file__))  # اضافه کردن model_core به sys.path برای import engine و data_setup
+# try:
+    
+# except ImportError:
+#     print("engine.py or data_setup.py not found in model_core directory.")
+#     # sys.exit(1)
 
 # Paths
 DATA_DIR = os.path.join(os.path.dirname(__file__), 'media', 'food_feedback')
