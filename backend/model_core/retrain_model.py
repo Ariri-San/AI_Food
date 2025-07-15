@@ -30,13 +30,12 @@ django.setup()
 from ai_api.models import FoodLabel, SystemInfo
 
 # Import engine and data_setup modules from backend dir
-sys.path.append(os.path.dirname(__file__))  # اضافه کردن model_core به sys.path برای import engine و data_setup
+# sys.path.append(os.path.dirname(__file__))  # اضافه کردن model_core به sys.path برای import engine و data_setup
 try:
-    from model_core import engine
-    from model_core import data_setup
+    from . import engine, data_setup
 except ImportError:
     print("engine.py or data_setup.py not found in model_core directory.")
-    sys.exit(1)
+    # sys.exit(1)
 
 # Paths
 DATA_DIR = os.path.join(os.path.dirname(__file__), 'media', 'food_feedback')
