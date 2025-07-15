@@ -27,6 +27,7 @@ import {
 } from '@mui/icons-material';
 import api from '../services/api';
 import { useLang } from '../i18n';
+import { Link } from 'react-router-dom';
 
 const LabelsPage = () => {
   const [labels, setLabels] = useState([]);
@@ -184,21 +185,24 @@ const LabelsPage = () => {
                 }}
               >
                 <CardContent sx={{ p: 3 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                    <LabelIcon sx={{ mr: 1, fontSize: 24, color: '#FE6B8B' }} />
-                    <Typography variant="h6" component="h3" sx={{ fontWeight: 'bold' }}>
-                      {label.name}
-                    </Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, justifyContent: 'space-between' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                      <LabelIcon sx={{ mr: 1, fontSize: 24, color: '#FE6B8B' }} />
+                      <Typography variant="h6" component="h3" sx={{ fontWeight: 'bold' }}>
+                        {label.name}
+                      </Typography>
+                    </Box>
+                    <Chip 
+                      component={Link}
+                      to={`/feedback?label=${label.id}`}
+                      label={`${label.sample_count || 0} ${t('samples_count')}`}
+                      size="small"
+                      color="primary"
+                      variant="outlined"
+                      clickable
+                      sx={{ ml: 1, cursor: 'pointer', textDecoration: 'none' }}
+                    />
                   </Box>
-                  
-                  <Chip 
-                    label={`${label.sample_count || 0} ${t('samples_count')}`}
-                    size="small"
-                    color="primary"
-                    variant="outlined"
-                    sx={{ mb: 2 }}
-                  />
-
                   <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
                     <IconButton 
                       size="small" 

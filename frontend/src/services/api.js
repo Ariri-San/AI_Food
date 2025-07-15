@@ -22,8 +22,14 @@ const api = {
     return res.json();
   },
   
-  async getFeedbackList() {
-    const res = await fetch(`${API_BASE}/feedback-list/`);
+  async getFeedbackList({ label, page, page_size } = {}) {
+    let url = `${API_BASE}/feedback-list/?`;
+    const params = [];
+    if (label) params.push(`label=${label}`);
+    if (page) params.push(`page=${page}`);
+    if (page_size) params.push(`page_size=${page_size}`);
+    url += params.join('&');
+    const res = await fetch(url);
     return res.json();
   },
   

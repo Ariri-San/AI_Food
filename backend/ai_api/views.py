@@ -19,6 +19,9 @@ from rest_framework.permissions import IsAdminUser
 import subprocess
 from rest_framework import generics, permissions
 from datetime import datetime
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.filters import OrderingFilter
+from django_filters.rest_framework import DjangoFilterBackend
 
 # Load class names dynamically from database
 def get_class_names():
@@ -125,11 +128,24 @@ class AddFoodSampleView(APIView):
             return Response(output_serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class FoodFeedbackListView(APIView):
-    def get(self, request, *args, **kwargs):
-        samples = FoodFeedbackSample.objects.all().order_by('-created_at')
-        serializer = FoodFeedbackSampleSerializer(samples, many=True, context={'request': request})
-        return Response(serializer.data)
+class FeedbackPagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = 'page_size'
+    max_page_size = 50
+
+class FoodFeedbackListView(generics.ListAPIView):
+    serializer_class = FoodFeedbackSampleSerializer
+    pagination_class = FeedbackPagination
+    filter_backends = [DjangoFilterBackend, OrderingFilter]
+    filterset_fields = ['label']
+    ordering = ['-created_at']
+
+    def get_queryset(self):
+        queryset = FoodFeedbackSample.objects.all().order_by('-created_at')
+        label_id = self.request.query_params.get('label')
+        if label_id:
+            queryset = queryset.filter(label_id=label_id)
+        return queryset
 
 class FoodFeedbackSampleUpdateView(generics.RetrieveUpdateAPIView):
     queryset = FoodFeedbackSample.objects.all()
