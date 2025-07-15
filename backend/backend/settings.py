@@ -124,10 +124,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = "static/"
+TEMPLATES[0]['DIRS'] += [os.path.join(BASE_DIR, 'frontend')]
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, '../frontend/build/static'),
+    os.path.join(BASE_DIR, 'frontend/static'),
 ]
-TEMPLATES[0]['DIRS'] += [os.path.join(BASE_DIR, '../frontend/build')]
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'

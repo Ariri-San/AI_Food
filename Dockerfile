@@ -19,6 +19,7 @@ COPY requirements.txt .
 
 # Install Python dependencies
 RUN pip install --upgrade pip
+RUN pip install torch==2.1.1+cpu torchvision==0.16.1+cpu --index-url https://download.pytorch.org/whl/cpu
 RUN pip install -r requirements.txt
 
 # Copy project files
