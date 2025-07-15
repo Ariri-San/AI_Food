@@ -229,8 +229,8 @@ class SubmitFeedbackView(APIView):
                 try:
                     label_instance = FoodLabel.objects.get(name=predicted_label)
                 except FoodLabel.DoesNotExist:
-                    # اگر لیبل وجود نداشت
-                    return Response({'error': 'Correct label is required when prediction is incorrect.'}, status=400)
+                    # اگر لیبل وجود نداشت، آن را ایجاد کن
+                    label_instance = FoodLabel.objects.create(name=predicted_label)
                 
                 feedback = FoodFeedbackSample.objects.create(
                     image=image_file, 
