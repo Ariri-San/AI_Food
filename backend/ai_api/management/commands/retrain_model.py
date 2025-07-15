@@ -24,8 +24,8 @@ class Command(BaseCommand):
             self.stdout.write(self.style.WARNING(f"Removed old model file: {MODEL_PATH}"))
 
         # Hyperparameters
-        BATCH_SIZE = 32
-        EPOCHS = 10
+        BATCH_SIZE = 16
+        EPOCHS = 5
         LEARNING_RATE = 1e-4
 
         # Device
