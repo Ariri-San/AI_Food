@@ -13,7 +13,7 @@ from torchvision import transforms, datasets
 from torch import nn
 from torch.utils.data import DataLoader, random_split
 import django
-from ...backend.ai_api.models import FoodLabel, SystemInfo
+from ai_api.models import FoodLabel, SystemInfo
 from django.utils import timezone
 
 # پیدا کردن ریشه پروژه (پوشه‌ای که backend/ در آن است)
@@ -32,8 +32,8 @@ from ai_api.models import FoodLabel, SystemInfo
 # Import engine and data_setup modules from backend dir
 sys.path.append(os.path.dirname(__file__))  # اضافه کردن model_core به sys.path برای import engine و data_setup
 try:
-    from backend.model_core import engine
-    from backend.model_core import data_setup
+    from model_core import engine
+    from model_core import data_setup
 except ImportError:
     print("engine.py or data_setup.py not found in model_core directory.")
     sys.exit(1)
