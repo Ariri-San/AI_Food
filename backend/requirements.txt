@@ -3,5 +3,8 @@ djangorestframework==3.14.0
 django-cors-headers==4.3.1
 pillow==10.1.0
 numpy==1.24.3
-python-decouple==3.8 
-django-filter 
+python-decouple==3.8
+django-filter
+tqdm
+torch==2.2.2
+torchvision==0.17.2
