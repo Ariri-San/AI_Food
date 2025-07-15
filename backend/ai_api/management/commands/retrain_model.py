@@ -6,6 +6,7 @@ from torchvision import transforms, datasets
 from torch import nn
 from torch.utils.data import DataLoader, random_split
 from ai_api.models import FoodLabel, SystemInfo
+from model_core import engine, data_setup
 from django.utils import timezone
 
 class Command(BaseCommand):
@@ -95,14 +96,14 @@ class Command(BaseCommand):
         optimizer = torch.optim.Adam(params=model.parameters(), lr=LEARNING_RATE)
 
         # Import engine and data_setup modules from model_core dir
-        import sys
-        sys.path.append(os.path.join(BASE_DIR, 'model_core'))
-        try:
-            import engine
-            import data_setup
-        except ImportError:
-            self.stdout.write(self.style.ERROR("engine.py or data_setup.py not found in model_core directory."))
-            return
+        # import sys
+        # sys.path.append(os.path.join(BASE_DIR, 'model_core'))
+        # try:
+        #     import engine
+        #     import data_setup
+        # except ImportError:
+        #     self.stdout.write(self.style.ERROR("engine.py or data_setup.py not found in model_core directory."))
+        #     return
 
         # Train
         results = engine.train(
