@@ -1,8 +1,8 @@
-venv/
-*/media/
-# */static/
-*/data/
-**/__pycache__/
+# venv/
+# */media/
+# # */static/
+# */data/
+# **/__pycache__/
 
 
 *.pyc
