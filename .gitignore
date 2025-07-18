@@ -7,4 +7,3 @@
 
 *.pyc
 .env
-db.sqlite3
