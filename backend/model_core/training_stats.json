@@ -1,0 +1,12 @@
+{
+  "total_samples": 21,
+  "labeled_samples": 21,
+  "total_labels": 4,
+  "last_retrain": "2025-07-15T00:51:04.753125",
+  "label_distribution": {
+    "pizza": 8,
+    "steak": 5,
+    "sushi": 4,
+    "omelet": 4
+  }
+}
