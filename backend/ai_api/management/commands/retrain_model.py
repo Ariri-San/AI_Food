@@ -25,7 +25,7 @@ class Command(BaseCommand):
 
         # Hyperparameters
         BATCH_SIZE = 16
-        EPOCHS = 5
+        EPOCHS = 15
         LEARNING_RATE = 1e-4
 
         # Device
@@ -48,10 +48,14 @@ class Command(BaseCommand):
 
         self.stdout.write(self.style.SUCCESS(f"Found {num_classes} classes from database: {class_names}"))
 
-        # Transforms
+        # Transforms with data augmentation for training
         normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
         custom_transforms = transforms.Compose([
             transforms.Resize((224, 224)),
+            transforms.RandomHorizontalFlip(),                    # قرینه‌سازی افقی
+            transforms.RandomVerticalFlip(),                      # قرینه‌سازی عمودی
+            transforms.RandomRotation(30),                        # چرخش تصادفی
+            transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.1),  # تغییر رنگ و روشنایی
             transforms.ToTensor(),
             normalize,
         ])
@@ -75,7 +79,7 @@ class Command(BaseCommand):
             self.stdout.write(self.style.WARNING("Using database classes for model output."))
 
         # Split dataset
-        train_size = int(0.8 * len(dataset))
+        train_size = int(0.75 * len(dataset))
         test_size = len(dataset) - train_size
         train_dataset, test_dataset = random_split(dataset, [train_size, test_size], generator=torch.Generator().manual_seed(42))
 
