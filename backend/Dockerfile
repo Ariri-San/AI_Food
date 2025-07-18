@@ -26,7 +26,7 @@ RUN pip install -r requirements.txt
 COPY . .
 
 # Collect static files (optional, if you use collectstatic)
-RUN python manage.py collectstatic --noinput
+# RUN python manage.py collectstatic --noinput
 
 # Expose port (default Django runserver)
 EXPOSE 8000
