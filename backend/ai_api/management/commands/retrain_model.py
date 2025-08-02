@@ -18,11 +18,6 @@ class Command(BaseCommand):
         DATA_DIR = os.path.join(BASE_DIR, 'data', 'media', 'food_feedback')
         MODEL_PATH = os.path.join(BASE_DIR, 'data', 'efficientnet_food_classifier.pth')
 
-        # Remove old model file if it exists
-        if os.path.exists(MODEL_PATH):
-            os.remove(MODEL_PATH)
-            self.stdout.write(self.style.WARNING(f"Removed old model file: {MODEL_PATH}"))
-
         # Hyperparameters
         BATCH_SIZE = 16
         EPOCHS = 15
@@ -124,6 +119,11 @@ class Command(BaseCommand):
         info.last_trained = timezone.now()
         info.total_samples = len(train_dataset) + len(test_dataset)
         info.save()
+        
+        # Remove old model file if it exists
+        if os.path.exists(MODEL_PATH):
+            os.remove(MODEL_PATH)
+            self.stdout.write(self.style.WARNING(f"Removed old model file: {MODEL_PATH}"))
 
         # Save model
         torch.save(model.state_dict(), MODEL_PATH)
