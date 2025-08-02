@@ -4,7 +4,7 @@ import { CloudUpload as UploadIcon, Send as SendIcon, Add as AddIcon, Search as 
 import api from '../services/api';
 import { useLang } from '../i18n';
 
-const FeedbackForm = ({ onResult, onLoading, showTitle = true, mode: controlledMode, onModeChange }) => {
+const FeedbackForm = ({ onResult, onLoading, showTitle = true, mode: controlledMode, onModeChange, onFeedbackSubmitted, result }) => {
   const { t, lang } = useLang();
   const [internalMode, setInternalMode] = useState('predict');
   const mode = controlledMode !== undefined ? controlledMode : internalMode;
@@ -53,6 +53,8 @@ const FeedbackForm = ({ onResult, onLoading, showTitle = true, mode: controlledM
         result.image = image;
       }
       onResult && onResult(result);
+      // عکس را پاک نمی‌کنیم تا فیدبک نمایش داده شود
+      if (onFeedbackSubmitted) onFeedbackSubmitted();
     } catch (err) {
       setError('خطا در ارسال درخواست');
     } finally {
@@ -88,8 +90,28 @@ const FeedbackForm = ({ onResult, onLoading, showTitle = true, mode: controlledM
           {t('choose_file')}
           <input type="file" hidden accept="image/*" onChange={handleImageChange} />
         </Button>
-        {image && (
-          <Typography variant="body2" sx={{ color: 'text.secondary' }}>{image.name}</Typography>
+        {image && !result && (
+          <Box sx={{ mt: 2 }}>
+            <Typography variant="body2" sx={{ color: 'text.secondary', mb: 1 }}>{image.name}</Typography>
+            <Box
+              component="img"
+              src={URL.createObjectURL(image)}
+              alt="Preview"
+              sx={{
+                width: '100%',
+                maxWidth: 300,
+                height: 'auto',
+                borderRadius: 2,
+                border: '2px solid #e0e0e0',
+                objectFit: 'cover'
+              }}
+            />
+          </Box>
+        )}
+        {image && result && (
+          <Typography variant="body2" sx={{ color: 'text.secondary', mt: 1 }}>
+            {image.name}
+          </Typography>
         )}
         {mode === 'add' && (
           <FormControl fullWidth>
@@ -114,6 +136,18 @@ const FeedbackForm = ({ onResult, onLoading, showTitle = true, mode: controlledM
         >
           {mode === 'predict' ? t('predict_mode') : t('add_mode')}
         </Button>
+        {image && (
+          <Button
+            variant="outlined"
+            onClick={() => {
+              setImage(null);
+              if (onResult) onResult(null);
+            }}
+            sx={{ mt: 1 }}
+          >
+            {t('clear_form')}
+          </Button>
+        )}
         {loading && <LinearProgress sx={{ mt: 1 }} />}
         {error && <Alert severity="error" sx={{ mt: 1 }}>{error}</Alert>}
       </Box>

@@ -17,6 +17,7 @@ const translations = {
     predict_mode: 'تشخیص غذا',
     add_mode: 'افزودن نمونه',
     add_sample_success: 'نمونه با موفقیت اضافه شد!',
+    clear_form: 'پاک کردن عکس',
     
     // Language
     language: 'زبان',
@@ -258,6 +259,7 @@ const translations = {
     predict_mode: 'Predict',
     add_mode: 'Add Sample',
     add_sample_success: 'Sample added successfully!',
+    clear_form: 'Remove Image',
     
     // Language
     language: 'Language',

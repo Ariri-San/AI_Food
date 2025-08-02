@@ -95,6 +95,11 @@ const PredictPage = () => {
                 showTitle={false}
                 mode={formMode}
                 onModeChange={setFormMode}
+                onFeedbackSubmitted={() => {
+                  // نتیجه باقی می‌ماند تا فیدبک نمایش داده شود
+                  console.log('Feedback submitted successfully');
+                }}
+                result={result}
               />
             </Paper>
           </Grid>

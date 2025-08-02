@@ -39,6 +39,7 @@ const PredictionResult = ({ result, onFeedbackSubmit }) => {
   const [loading, setLoading] = useState(false);
   const [feedbackSuccess, setFeedbackSuccess] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
+  const [submittedFeedback, setSubmittedFeedback] = useState(null);
   
   if (!result) return null;
 
@@ -66,6 +67,7 @@ const PredictionResult = ({ result, onFeedbackSubmit }) => {
       
       setFeedbackSuccess(true);
       setFeedbackState('correct');
+      setSubmittedFeedback(feedbackResult);
       if (onFeedbackSubmit) {
         onFeedbackSubmit(feedbackResult);
       }
@@ -101,6 +103,7 @@ const PredictionResult = ({ result, onFeedbackSubmit }) => {
       
       setFeedbackSuccess(true);
       setFeedbackState('incorrect');
+      setSubmittedFeedback(feedbackResult);
       setOpenDialog(false);
       if (onFeedbackSubmit) {
         onFeedbackSubmit(feedbackResult);
@@ -127,12 +130,33 @@ const PredictionResult = ({ result, onFeedbackSubmit }) => {
       {result.predicted_label && (
         <Card sx={{ mb: 2, background: 'rgba(76, 175, 80, 0.1)', border: '1px solid rgba(76, 175, 80, 0.3)' }}>
           <CardContent>
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-              <FoodIcon sx={{ mr: 1, color: '#4CAF50' }} />
-              <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                {t('predicted_food')}
-              </Typography>
-            </Box>
+            <Grid container spacing={2}>
+              {/* تصویر */}
+              {result.image && (
+                <Grid item xs={12} sm={4}>
+                  <Box
+                    component="img"
+                    src={URL.createObjectURL(result.image)}
+                    alt="Uploaded food"
+                    sx={{
+                      width: '100%',
+                      height: 200,
+                      borderRadius: 2,
+                      border: '2px solid #e0e0e0',
+                      objectFit: 'cover'
+                    }}
+                  />
+                </Grid>
+              )}
+              
+              {/* نتیجه */}
+              <Grid item xs={12} sm={result.image ? 8 : 12}>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                  <FoodIcon sx={{ mr: 1, color: '#4CAF50' }} />
+                  <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                    {t('predicted_food')}
+                  </Typography>
+                </Box>
             
             <Chip
               label={result.predicted_label}
@@ -216,6 +240,8 @@ const PredictionResult = ({ result, onFeedbackSubmit }) => {
                 </Typography>
               </Alert>
             )}
+              </Grid>
+            </Grid>
           </CardContent>
         </Card>
       )}
