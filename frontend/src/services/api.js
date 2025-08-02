@@ -1,5 +1,5 @@
 import confige from "../confige.json"
-const API_BASE = confige.URL + '/api/food';
+const API_BASE = confige.URL + 'api/food';
 
 const api = {
   // متدهای موجود
