@@ -42,7 +42,7 @@ def get_num_classes():
         return 0
 
 # Load model and class names from database
-MODEL_PATH = os.path.join(settings.BASE_DIR, 'model_core', 'efficientnet_food_classifier.pth')
+MODEL_PATH = os.path.join(settings.BASE_DIR, 'data', 'efficientnet_food_classifier.pth')
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 

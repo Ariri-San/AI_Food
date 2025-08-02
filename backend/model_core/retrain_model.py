@@ -37,7 +37,7 @@ django.setup()
 #     # sys.exit(1)
 
 # Paths
-DATA_DIR = os.path.join(os.path.dirname(__file__), 'media', 'food_feedback')
+DATA_DIR = os.path.join(os.path.dirname(__file__), 'data', 'media', 'food_feedback')
 # مسیر مدل:
 MODEL_PATH = os.path.join(os.path.dirname(__file__), 'efficientnet_food_classifier.pth')
 

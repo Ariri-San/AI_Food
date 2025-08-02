@@ -15,8 +15,8 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         # Paths
         BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))) )
-        DATA_DIR = os.path.join(BASE_DIR, 'media', 'food_feedback')
-        MODEL_PATH = os.path.join(BASE_DIR, 'model_core', 'efficientnet_food_classifier.pth')
+        DATA_DIR = os.path.join(BASE_DIR, 'data', 'media', 'food_feedback')
+        MODEL_PATH = os.path.join(BASE_DIR, 'data', 'efficientnet_food_classifier.pth')
 
         # Remove old model file if it exists
         if os.path.exists(MODEL_PATH):
