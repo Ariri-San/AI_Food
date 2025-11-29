@@ -26,6 +26,29 @@ from django.core.management import call_command
 from io import StringIO
 from django.views.generic import TemplateView
 
+def validate_image_file(image_file):
+    """Validate image file type and size"""
+    allowed_types = [
+        'image/jpeg',
+        'image/jpg',
+        'image/png', 
+        'image/webp',
+        'image/gif',
+        'image/bmp',
+        'image/tiff'
+    ]
+    
+    # بررسی نوع فایل
+    if image_file.content_type not in allowed_types:
+        return False, f"نوع فایل {image_file.content_type} پشتیبانی نمی‌شود. انواع مجاز: JPEG, PNG, WebP, GIF, BMP, TIFF"
+    
+    # بررسی اندازه فایل (10MB)
+    max_size = 10 * 1024 * 1024
+    if image_file.size > max_size:
+        return False, f"حجم فایل ({image_file.size / 1024 / 1024:.1f}MB) بیشتر از حد مجاز (10MB) است"
+    
+    return True, "OK"
+
 # Load class names dynamically from database
 def get_class_names():
     """Get class names from FoodLabel database table"""
@@ -110,6 +133,11 @@ class PredictFoodView(APIView):
         if not image_file:
             return Response({'error': 'No image provided.'}, status=status.HTTP_400_BAD_REQUEST)
         
+        # اعتبارسنجی فایل
+        is_valid, message = validate_image_file(image_file)
+        if not is_valid:
+            return Response({'error': message}, status=status.HTTP_400_BAD_REQUEST)
+        
         try:
             class_names = get_class_names()
             image = Image.open(image_file).convert('RGB')
@@ -147,6 +175,10 @@ class AddFoodSampleView(APIView):
         data = request.data.dict()
         image_file = request.FILES.get('image')
         if image_file:
+            # اعتبارسنجی فایل
+            is_valid, message = validate_image_file(image_file)
+            if not is_valid:
+                return Response({'error': message}, status=status.HTTP_400_BAD_REQUEST)
             data['image'] = image_file
         # اگر مقدار is_correct برابر 0 یا '0' یا '' یا 'null' بود، None ذخیره شود
         if 'is_correct' in data and (data['is_correct'] in ('', 'null', None, 0, '0')):
@@ -225,6 +257,11 @@ class SubmitFeedbackView(APIView):
         
         if not image_file or not predicted_label:
             return Response({'error': 'Image and predicted label are required.'}, status=400)
+        
+        # اعتبارسنجی فایل
+        is_valid, message = validate_image_file(image_file)
+        if not is_valid:
+            return Response({'error': message}, status=status.HTTP_400_BAD_REQUEST)
         
         try:
             if is_correct == 'true':

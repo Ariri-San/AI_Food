@@ -62,12 +62,37 @@ const FeedbackEditForm = ({ feedbackId, token: initialToken }) => {
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      setImage(file);
-      const reader = new FileReader();
-      reader.onload = (e) => setPreviewUrl(e.target.result);
-      reader.readAsDataURL(file);
+    if (!file) return;
+    
+    // بررسی نوع فایل - پشتیبانی از انواع مختلف تصاویر
+    const allowedTypes = [
+      'image/jpeg',
+      'image/jpg', 
+      'image/png',
+      'image/webp',
+      'image/gif',
+      'image/bmp',
+      'image/tiff',
+      'image/svg+xml'
+    ];
+    
+    if (!file.type.startsWith('image/') || !allowedTypes.includes(file.type)) {
+      setError('لطفاً فقط فایل تصویری انتخاب کنید (JPG, PNG, WebP, GIF, BMP, TIFF, SVG)');
+      return;
     }
+    
+    // بررسی اندازه فایل (حداکثر 10MB)
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    if (file.size > maxSize) {
+      setError('حجم فایل نباید بیشتر از 10 مگابایت باشد');
+      return;
+    }
+    
+    setImage(file);
+    setError(''); // پاک کردن خطاهای قبلی
+    const reader = new FileReader();
+    reader.onload = (e) => setPreviewUrl(e.target.result);
+    reader.readAsDataURL(file);
   };
 
   const handleSubmit = async (e) => {
@@ -165,7 +190,30 @@ const FeedbackEditForm = ({ feedbackId, token: initialToken }) => {
                 <input
                   type="file"
                   hidden
+                  accept="image/*,image/jpeg,image/jpg,image/png,image/webp,image/gif,image/bmp,image/tiff,image/svg+xml"
+                  onChange={handleImageChange}
+                />
+              </Button>
+              
+              {/* دکمه دوربین برای موبایل */}
+              <Button
+                variant="outlined"
+                component="label"
+                startIcon={<UploadIcon />}
+                sx={{ mb: 2 }}
+                fullWidth
+                style={{
+                  backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                  borderColor: '#4caf50',
+                  color: '#4caf50'
+                }}
+              >
+                دوربین 📷
+                <input
+                  type="file"
+                  hidden
                   accept="image/*"
+                  capture="environment"
                   onChange={handleImageChange}
                 />
               </Button>

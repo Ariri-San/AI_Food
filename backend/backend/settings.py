@@ -145,6 +145,34 @@ CSRF_TRUSTED_ORIGINS = [
     "https://ai-food-9evn.onrender.com"
 ]
 
+# File upload settings for mobile compatibility
+FILE_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024  # 10MB
+DATA_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024  # 10MB
+FILE_UPLOAD_TEMP_DIR = None
+FILE_UPLOAD_PERMISSIONS = 0o644
+
+# Additional CORS settings for mobile
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+]
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
+
 # CORS_ALLOWED_ORIGINS = [
 #     "http://localhost:3000",
 # ]

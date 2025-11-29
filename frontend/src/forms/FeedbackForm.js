@@ -13,6 +13,18 @@ const FeedbackForm = ({ onResult, onLoading, showTitle = true, mode: controlledM
   const [labels, setLabels] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [isMobile, setIsMobile] = useState(false);
+
+  // تشخیص موبایل
+  React.useEffect(() => {
+    const checkMobile = () => {
+      const userAgent = navigator.userAgent.toLowerCase();
+      const isMobileDevice = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent);
+      setIsMobile(isMobileDevice);
+    };
+    
+    checkMobile();
+  }, []);
 
   React.useEffect(() => {
     if (mode === 'add') {
@@ -21,7 +33,45 @@ const FeedbackForm = ({ onResult, onLoading, showTitle = true, mode: controlledM
   }, [mode]);
 
   const handleImageChange = (e) => {
-    setImage(e.target.files[0]);
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    // بررسی نوع فایل - پشتیبانی از انواع مختلف تصاویر
+    const allowedTypes = [
+      'image/jpeg',
+      'image/jpg', 
+      'image/png',
+      'image/webp',
+      'image/gif',
+      'image/bmp',
+      'image/tiff'
+    ];
+    
+    // بررسی دقیق‌تر نوع فایل
+    const fileExtension = file.name.toLowerCase().split('.').pop();
+    const validExtensions = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'bmp', 'tiff'];
+    
+    // اگر نوع فایل خالی بود (مشکل موبایل)، بر اساس پسوند بررسی کن
+    if (!file.type || file.type === '') {
+      if (!validExtensions.includes(fileExtension)) {
+        setError(`نوع فایل پشتیبانی نمی‌شود. انواع مجاز: JPG, PNG, WebP, GIF, BMP, TIFF`);
+        return;
+      }
+    } else if (!file.type.startsWith('image/') || 
+        (!allowedTypes.includes(file.type) && !validExtensions.includes(fileExtension))) {
+      setError(`نوع فایل ${file.type} پشتیبانی نمی‌شود. انواع مجاز: JPG, PNG, WebP, GIF, BMP, TIFF`);
+      return;
+    }
+    
+    // بررسی اندازه فایل (حداکثر 10MB)
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    if (file.size > maxSize) {
+      setError('حجم فایل نباید بیشتر از 10 مگابایت باشد');
+      return;
+    }
+    
+    setImage(file);
+    setError(''); // پاک کردن خطاهای قبلی
     if (onResult) onResult(null); // پاک کردن نتیجه قبلی
     e.target.value = ''; // ریست input برای انتخاب مجدد همان فایل
   };
@@ -86,13 +136,58 @@ const FeedbackForm = ({ onResult, onLoading, showTitle = true, mode: controlledM
           component="label"
           startIcon={<UploadIcon />}
           fullWidth
+          sx={{
+            minHeight: '48px', // برای موبایل بهتر
+            fontSize: '16px', // برای موبایل بهتر
+            '&:hover': {
+              backgroundColor: 'rgba(25, 118, 210, 0.04)',
+            }
+          }}
         >
-          {t('choose_file')}
-          <input type="file" hidden accept="image/*" onChange={handleImageChange} />
+          {image ? 'تغییر فایل' : t('choose_file')}
+          <input 
+            type="file" 
+            hidden 
+            accept="image/jpeg,image/jpg,image/png,image/webp,image/gif,image/bmp,image/tiff" 
+            onChange={handleImageChange}
+            multiple={false}
+          />
         </Button>
+        
+        {/* دکمه دوربین برای موبایل */}
+        {isMobile && (
+          <Button
+            variant="outlined"
+            component="label"
+            startIcon={<UploadIcon />}
+            fullWidth
+            sx={{
+              minHeight: '48px',
+              fontSize: '16px',
+              backgroundColor: 'rgba(76, 175, 80, 0.1)',
+              borderColor: 'success.main',
+              color: 'success.main',
+              '&:hover': {
+                backgroundColor: 'rgba(76, 175, 80, 0.2)',
+              }
+            }}
+          >
+            دوربین 📷
+            <input 
+              type="file" 
+              hidden 
+              accept="image/jpeg,image/jpg,image/png,image/webp,image/gif,image/bmp,image/tiff" 
+              capture="environment"
+              onChange={handleImageChange}
+            />
+          </Button>
+        )}
+        
         {image && !result && (
           <Box sx={{ mt: 2 }}>
-            <Typography variant="body2" sx={{ color: 'text.secondary', mb: 1 }}>{image.name}</Typography>
+            <Typography variant="body2" sx={{ color: 'text.secondary', mb: 1 }}>
+              {image.name} ({(image.size / 1024 / 1024).toFixed(2)} MB)
+            </Typography>
             <Box
               component="img"
               src={URL.createObjectURL(image)}
@@ -103,7 +198,12 @@ const FeedbackForm = ({ onResult, onLoading, showTitle = true, mode: controlledM
                 height: 'auto',
                 borderRadius: 2,
                 border: '2px solid #e0e0e0',
-                objectFit: 'cover'
+                objectFit: 'cover',
+                maxHeight: '300px'
+              }}
+              onError={(e) => {
+                console.error('Error loading image preview');
+                setError('خطا در نمایش پیش‌نمایش عکس');
               }}
             />
           </Box>
@@ -149,7 +249,21 @@ const FeedbackForm = ({ onResult, onLoading, showTitle = true, mode: controlledM
           </Button>
         )}
         {loading && <LinearProgress sx={{ mt: 1 }} />}
-        {error && <Alert severity="error" sx={{ mt: 1 }}>{error}</Alert>}
+        {error && (
+          <Alert severity="error" sx={{ mt: 1 }}>
+            {error}
+            {error.includes('اتصال') && (
+              <Box sx={{ mt: 1, fontSize: '12px', color: 'text.secondary' }}>
+                نکات عیب‌یابی:
+                <ul style={{ margin: '4px 0', paddingLeft: '16px' }}>
+                  <li>اتصال اینترنت خود را بررسی کنید</li>
+                  <li>اگر از VPN استفاده می‌کنید، آن را غیرفعال کنید</li>
+                  <li>مرورگر خود را رفرش کنید</li>
+                </ul>
+              </Box>
+            )}
+          </Alert>
+        )}
       </Box>
     </Paper>
   );

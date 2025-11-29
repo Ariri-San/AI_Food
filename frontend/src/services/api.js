@@ -20,11 +20,25 @@ const api = {
     } else {
       formData.append('is_correct', '');
     }
-    const res = await fetch(`${API_BASE}/predict/`, {
-      method: 'POST',
-      body: formData,
-    });
-    return res.json();
+    
+    try {
+      const res = await fetch(`${API_BASE}/predict/`, {
+        method: 'POST',
+        body: formData,
+      });
+      
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.error || `خطا در آپلود: ${res.status} ${res.statusText}`);
+      }
+      
+      return await res.json();
+    } catch (error) {
+      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        throw new Error('خطا در اتصال به سرور. لطفاً اتصال اینترنت خود را بررسی کنید.');
+      }
+      throw error;
+    }
   },
   
   async getFeedbackList({ label, page, page_size } = {}) {
@@ -164,12 +178,25 @@ const api = {
     const formData = new FormData();
     formData.append('image', image);
     formData.append('label_id', labelId);
-    const res = await fetch(`${API_BASE}/add/`, {
-      method: 'POST',
-      body: formData,
-    });
-    if (!res.ok) throw new Error('خطا در افزودن نمونه');
-    return res.json();
+    
+    try {
+      const res = await fetch(`${API_BASE}/add/`, {
+        method: 'POST',
+        body: formData,
+      });
+      
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.error || `خطا در آپلود: ${res.status} ${res.statusText}`);
+      }
+      
+      return await res.json();
+    } catch (error) {
+      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        throw new Error('خطا در اتصال به سرور. لطفاً اتصال اینترنت خود را بررسی کنید.');
+      }
+      throw error;
+    }
   },
 };
 
